@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: postgres
+  template:
+    metadata:
+      labels:
+        component: postgres
+    #pod specs
+    spec:
+      #modificacion para agregar PVC
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            #nombre en database-persistent-volume-claim.yaml
+            claimName: database-persistent-volume-claim
+      #fin de la modificacion PVC
+      containers:
+        - name: postgres
+          image: postgres
+          ports:
+            #port por defecto de postgres
+            - containerPort: 5432
+          #modificacion para agregar PVC
+          #esta linea dice que se regrese al volumen de arriba (postgres-storage)
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+              #postgres guarda los datos en un subfolder
+              subPath: postgres
+          #fin de la modificacion PVC
+
+          #configuracion del password de postgres
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword
+                  key: PGPASSWORD

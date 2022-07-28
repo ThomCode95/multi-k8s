@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: server
+  template:
+    metadata:
+      labels:
+      #los labels que pongamos aqui deben concordar con el spec del deployment de arriba
+        component: server
+    spec:
+      containers:
+        - name: server
+          image: stephengrider/multi-server
+          ports:
+            - containerPort: 5000
+
+#nota: la imagen multi-server espera unos key-value pairs como variables de entorno
+#que le dice al multi-server como conectarse a nuestra instancia en postgres y redis
+          env:
+            - name: REDIS_HOST
+              value: redis-cluster-ip-service
+            - name: REDIS_PORT
+              value: '6379'
+            #default username para postgres
+            - name: PGUSER
+              value: postgres
+            - name: PGHOST
+              value: postgres-cluster-ip-service
+            - name: PGPORT
+              value: '5432'
+            - name: PGDATABASE
+              value: postgres
