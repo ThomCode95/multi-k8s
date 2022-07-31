@@ -11,11 +11,9 @@ spec:
     metadata:
       labels:
         component: redis
-    #pod specs
     spec:
       containers:
         - name: redis
           image: redis
           ports:
-            #port por defecto de redis
             - containerPort: 6379

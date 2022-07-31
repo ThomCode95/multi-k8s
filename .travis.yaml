@@ -1,42 +1,27 @@
 sudo: required
 services:
-  #necesitamos docker build preinstalado antes de correr nuestro build
   - docker
-#pasando el SHA para versioning 
 env:
   global:
-    #guardar valorde SHA en variable SHA
     - SHA=$(git rev-parse HEAD)
-    #para que Google Cloud no pida alguna entrada por USER INPUT
     - CLOUDSDK_CORE_DISABLE_PROMPTS=1
-
 before_install:
-  #SECRET para travis
   - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
-  #este comando descarga sdk GoogleCloud      | este comando instala localmente una instania de GoogleCloud
   - curl https://sdk.cloud.google.com | bash > /dev/null;
-  #busca el directorio donde fue instalado GoogleCloud y modifica nuestro shell
   - source $HOME/google-cloud-sdk/path.bash.inc
-  #instalar el comando kubectl dentro de nuestro ambiente de travis
   - gcloud components update kubectl
-  # credenciales de autenticacion para google cloud
-  - gcloud auth activate-service-account --key-file service-account.json 
+  - gcloud auth activate-service-account --key-file service-account.json
   - gcloud config set project multi-k8s-357722
   - gcloud config set compute/zone us-east5-a
   - gcloud container clusters get-credentials multi-cluster
-  #setup de contrasenia y usuario
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
- #constuiri imagen            |etiqueta temporal react |path relativo dentro de client al archivo Dockerfile | build context   
   - docker build -t taariasdckr95/react-test -f ./client/Dockerfile.dev ./client
 
-#seccion scripts para que corra los test de nuestro proyecto
 script:
   - docker run -e CI=true taariasdckr95/react-test npm test
 
 deploy:
-  #decirle a travis que no haga nada con el proyecto, que solo corra un script
   provider: script
-  #correr este script que esta en la carpeta root 
   script: bash ./deploy.sh
   on:
     branch: master

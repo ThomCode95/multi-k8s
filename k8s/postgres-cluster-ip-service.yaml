@@ -7,6 +7,5 @@ spec:
   selector:
     component: postgres
   ports:
-  #port y targetPort para que postgres se conecte a redis
     - port: 5432
       targetPort: 5432

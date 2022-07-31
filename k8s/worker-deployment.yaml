@@ -1,5 +1,3 @@
-#multi-work no necesita que se le asignen puertos ni servicios ya que no recibe
-#requests
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -12,14 +10,11 @@ spec:
   template:
     metadata:
       labels:
-        #el label tiene que ser igual al selector de arriba
         component: worker
     spec:
       containers:
         - name: worker
           image: stephengrider/multi-worker
-          #pasar variables de entorno al contenedor de worker cuando sea creado dentro del pod
-          #pasamos los valores de REDIS (el nombre del host, valor del cluster por donde entra y el puerto por defecto)
           env:
             - name: REDIS_HOST
               value: redis-cluster-ip-service

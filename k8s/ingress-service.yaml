@@ -1,20 +1,19 @@
 apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1
 # UPDATE API
 kind: Ingress
 metadata:
   name: ingress-service
   annotations:
-    #crear un controlador ngonx basado en nginx
     kubernetes.io/ingress.class: 'nginx'
     nginx.ingress.kubernetes.io/use-regex: 'true'
-    # ADD ANNOTATION reescribe el request para eliminar /api
+    # ADD ANNOTATION
     nginx.ingress.kubernetes.io/rewrite-target: /$1
     # UPDATE ANNOTATION
 spec:
   rules:
     - http:
         paths:
-          #si un servicio viene a la ruta '/' lo mandamos a client-cluster-ip service
           - path: /?(.*)
             # UPDATE PATH
             pathType: Prefix
@@ -25,7 +24,6 @@ spec:
                 name: client-cluster-ip-service
                 port:
                   number: 3000
-          #si un request viene a la ruta '/api' lo mandamos a server-cluster-ip-service
           - path: /api/?(.*)
             # UPDATE PATH
             pathType: Prefix

@@ -5,10 +5,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-  #este servicio debe proveer acceso al servicio de multi-server pod
     component: server
   ports:
     - port: 5000
       targetPort: 5000
-
-#los puertos aqui deben coincidir con los del archivo server-deployment.yaml
